@@ -7,7 +7,13 @@ import {
     VEHICLE_MODELS_RETRIEVED
 } from './types'
 
-const url = 'https://firestore.googleapis.com/v1beta1/projects/mahaveerbattries-dev/databases/(default)/documents:runQuery';
+import {
+    firestoreBaseUrl,
+    firestoreDocumentsBaseUrl,
+    firestoreDoumentsQueryUrl
+} from '../../config';
+
+const vehiclemodelsUrl = `${firestoreDocumentsBaseUrl}/vehiclemodels`;
 
 export const getVehiclesWithBatteryModel = batteryModel => (dispatch, getState) => {
     return new Promise(async (resolve, reject) => {
@@ -28,7 +34,7 @@ export const getVehiclesWithBatteryModel = batteryModel => (dispatch, getState) 
                 }
             };
 
-            const result = await axios.post(url, query, {
+            const result = await axios.post(firestoreDoumentsQueryUrl, query, {
                 headers: {
                     'Authorization': 'Bearer ' + auth.token
                 }
@@ -67,7 +73,6 @@ export const getVehiclesWithBatteryModel = batteryModel => (dispatch, getState) 
 export const addVehicle = vehicle => async (dispatch, getState) => {
     try {
         const auth = getState().auth;
-        const url = 'https://firestore.googleapis.com/v1beta1/projects/mahaveerbattries-dev/databases/(default)/documents/vehiclemodels';
         const document = {
             fields: {
                 type: { stringValue: vehicle.type },
@@ -82,7 +87,7 @@ export const addVehicle = vehicle => async (dispatch, getState) => {
             }
         }
 
-        await axios.post(url, document, {
+        await axios.post(vehiclemodelsUrl, document, {
             headers: {
                 'Authorization': 'Bearer ' + auth.token
             }
@@ -102,7 +107,7 @@ export const deleteVehicle = vehicle => (dispatch, getState) => {
     return new Promise(async (resolve, reject) => {
         try {
             const auth = getState().auth;
-            const url = `https://firestore.googleapis.com/v1beta1/${vehicle.ref}`;
+            const url = `${firestoreBaseUrl}/${vehicle.ref}`;
             await axios.delete(url, {
                 headers: {
                     'Authorization': 'Bearer ' + auth.token
@@ -124,8 +129,7 @@ export const deleteVehicle = vehicle => (dispatch, getState) => {
 export const loadAllVehicles = () => async (dispatch, getState) => {
     try {
         const auth = getState().auth;
-        const url = 'https://firestore.googleapis.com/v1beta1/projects/mahaveerbattries-dev/databases/(default)/documents/vehiclemodels';
-        const result = await axios.get(url, {
+        const result = await axios.get(vehiclemodelsUrl, {
             headers: {
                 'Authorization': 'Bearer ' + auth.token
             }

@@ -2,14 +2,13 @@ import axios from 'axios';
 import { getVehiclesWithBatteryModel, deleteVehicle } from './';
 import { BATTERY_MODELS_RETRIEVED, BATTERY_MODEL_CREATED, BATTERY_MODEL_DELETED } from './types';
 
-const baseUrl = 'https://firestore.googleapis.com/v1beta1';
-//const baseDocumentsUrl = `${baseUrl}/projects/mahaveerbattries-dev/databases/(default)/documents`;
+import { firestoreBaseUrl, firestoreDocumentsBaseUrl } from '../../config';
+const batterymodelsUrl = `${firestoreDocumentsBaseUrl}/batterymodels`;
 
 export const getBatteryModels = () => async (dispatch, getState) => {
     try {
         const auth = getState().auth;
-        const url = 'https://firestore.googleapis.com/v1beta1/projects/mahaveerbattries-dev/databases/(default)/documents/batterymodels';
-        const result = await axios.get(url, {
+        const result = await axios.get(batterymodelsUrl, {
             headers: {
                 'Authorization': 'Bearer ' + auth.token
             }
@@ -38,7 +37,6 @@ export const getBatteryModels = () => async (dispatch, getState) => {
 export const createBatteryModel = batteryModel => async (dispatch, getState) => {
     try {
         const auth = getState().auth;
-        const url = 'https://firestore.googleapis.com/v1beta1/projects/mahaveerbattries-dev/databases/(default)/documents/batterymodels';
         const document = {
             fields: {
                 "model": { stringValue: batteryModel.model },
@@ -51,7 +49,7 @@ export const createBatteryModel = batteryModel => async (dispatch, getState) => 
             }
         }
 
-        const result = await axios.post(url, document, {
+        const result = await axios.post(batterymodelsUrl, document, {
             headers: {
                 'Authorization': 'Bearer ' + auth.token
             }
@@ -69,7 +67,7 @@ export const createBatteryModel = batteryModel => async (dispatch, getState) => 
 export const deleteBatteryModel = batteryModel => async (dispatch, getState) => {
     try {
         const auth = getState().auth;
-        const url = `${baseUrl}/${batteryModel.ref}`;
+        const url = `${firestoreBaseUrl}/${batteryModel.ref}`;
 
         const promises = [];
         const vehiclesAssociatedWithBattery = await dispatch(getVehiclesWithBatteryModel(batteryModel));

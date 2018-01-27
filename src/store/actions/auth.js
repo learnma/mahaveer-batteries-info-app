@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { USER_AUTHENTICATED, LOGOFF } from '../actions/types'
-import config from '../../config';
+import { config } from '../../config';
 
 export const loginWithEmail = (email, password) => async (dispatch) => {
     try {

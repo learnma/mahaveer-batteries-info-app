@@ -20,7 +20,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "deploy-dev": "firebase deploy --project mahaveerbattries-dev"
+    "deploy-dev": "firebase deploy --project mahaveerbattries-dev",
+    "deploy": "firebase deploy --project mahaveerbattries"
   },
   "devDependencies": {
     "eslint": "^4.16.0",
