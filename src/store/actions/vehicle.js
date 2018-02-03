@@ -47,12 +47,7 @@ export const getVehiclesWithBatteryModel = batteryModel => (dispatch, getState) 
                         type: data.document.fields.type.stringValue,
                         make: data.document.fields.make.stringValue,
                         model: data.document.fields.model.stringValue,
-                        batteryname: data.document.fields.batteryname.stringValue,
-                        batterymodel: data.document.fields.batterymodel.stringValue,
-                        batteryfullwarrenty: data.document.fields.batteryfullwarrenty.integerValue,
-                        batteryproratawarrenty: data.document.fields.batteryproratawarrenty.integerValue,
-                        batterylandingprice: data.document.fields.batterylandingprice.doubleValue,
-                        batterymrp: data.document.fields.batterymrp.doubleValue
+                        batterymodel: data.document.fields.batterymodel.stringValue
                     }
                 });
             }
@@ -78,12 +73,7 @@ export const addVehicle = vehicle => async (dispatch, getState) => {
                 type: { stringValue: vehicle.type },
                 make: { stringValue: vehicle.make },
                 model: { stringValue: vehicle.model },
-                batterymodel: { stringValue: vehicle.batterymodel },
-                batteryname: { stringValue: vehicle.batteryname },
-                batteryfullwarrenty: { integerValue: vehicle.batteryfullwarrenty },
-                batteryproratawarrenty: { integerValue: vehicle.batteryproratawarrenty },
-                batterylandingprice: { doubleValue: vehicle.batterylandingprice },
-                batterymrp: { doubleValue: vehicle.batterymrp }
+                batterymodel: { stringValue: vehicle.batterymodel }
             }
         }
 
@@ -141,12 +131,7 @@ export const loadAllVehicles = () => async (dispatch, getState) => {
                 type: document.fields.type.stringValue,
                 make: document.fields.make.stringValue,
                 model: document.fields.model.stringValue,
-                batteryname: document.fields.batteryname.stringValue,
-                batterymodel: document.fields.batterymodel.stringValue,
-                batteryfullwarrenty: document.fields.batteryfullwarrenty.integerValue,
-                batteryproratawarrenty: document.fields.batteryproratawarrenty.integerValue,
-                batterylandingprice: document.fields.batterylandingprice.doubleValue,
-                batterymrp: document.fields.batterymrp.doubleValue
+                batterymodel: document.fields.batterymodel.stringValue
             }
         });
 

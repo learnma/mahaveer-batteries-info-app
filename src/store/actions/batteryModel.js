@@ -1,6 +1,11 @@
 import axios from 'axios';
 import { getVehiclesWithBatteryModel, deleteVehicle } from './';
-import { BATTERY_MODELS_RETRIEVED, BATTERY_MODEL_CREATED, BATTERY_MODEL_DELETED } from './types';
+import {
+    BATTERY_MODELS_RETRIEVED,
+    BATTERY_MODEL_CREATED,
+    BATTERY_MODEL_DELETED,
+    BATTERY_MODEL_UPDATED
+} from './types';
 
 import { firestoreBaseUrl, firestoreDocumentsBaseUrl } from '../../config';
 const batterymodelsUrl = `${firestoreDocumentsBaseUrl}/batterymodels`;
@@ -16,12 +21,15 @@ export const getBatteryModels = () => async (dispatch, getState) => {
         const batteryModels = result.data.documents.map(d => {
             return {
                 ref: d.name,
+                brand: d.fields.brand ? d.fields.brand.stringValue : 'Amron',
                 name: d.fields.name.stringValue,
                 model: d.fields.model.stringValue,
                 fullwarrenty: d.fields.fullwarrenty.integerValue,
                 proratawarrenty: d.fields.proratawarrenty.integerValue,
                 landingprice: d.fields.landingprice.doubleValue,
-                mrp: d.fields.mrp.doubleValue
+                mrp: d.fields.mrp.doubleValue,
+                stock: d.fields.stock ? d.fields.stock.integerValue : 0,
+                ah: d.fields.ah ? d.fields.ah.doubleValue : 0
             }
         });
         dispatch({
@@ -31,6 +39,16 @@ export const getBatteryModels = () => async (dispatch, getState) => {
     } catch (err) {
         console.error(err);
         alert('Error while retriveing battery models ' + err);
+    }
+}
+
+export const getBatteryModel = batteryModel => async (dispatch, getState) => {
+    try {
+        //const batteryModels = getState().batteryModels;
+        //const batteryModel = batteryModels.find()
+    } catch (err) {
+        console.error(err);
+        alert(`Error while retrieving batteryModel ${batteryModel} - ${err}`);
     }
 }
 
@@ -45,7 +63,9 @@ export const createBatteryModel = batteryModel => async (dispatch, getState) => 
                 "fullwarrenty": { integerValue: batteryModel.fullwarrenty },
                 "proratawarrenty": { integerValue: batteryModel.proratawarrenty },
                 "landingprice": { doubleValue: batteryModel.landingprice },
-                "mrp": { doubleValue: batteryModel.mrp }
+                "mrp": { doubleValue: batteryModel.mrp },
+                "stock": { integerValue: batteryModel.stock },
+                "ah": { doubleValue: batteryModel.ah }
             }
         }
 
@@ -61,6 +81,41 @@ export const createBatteryModel = batteryModel => async (dispatch, getState) => 
     } catch (err) {
         console.error(err);
         alert('Error while adding a battery model' + err);
+    }
+}
+
+export const updateBatteryModel = batteryModel => async (dispatch, getState) => {
+    try {
+        const auth = getState().auth;
+        const url = `${firestoreBaseUrl}/${batteryModel.ref}`;
+        const document = {
+            fields: {
+                "model": { stringValue: batteryModel.model },
+                "name": { stringValue: batteryModel.name },
+                "brand": { stringValue: batteryModel.brand },
+                "fullwarrenty": { integerValue: batteryModel.fullwarrenty },
+                "proratawarrenty": { integerValue: batteryModel.proratawarrenty },
+                "landingprice": { doubleValue: batteryModel.landingprice },
+                "mrp": { doubleValue: batteryModel.mrp },
+                "stock": { integerValue: batteryModel.stock },
+                "ah": { doubleValue: batteryModel.ah }
+            }
+        }
+
+        await axios.patch(url, document, {
+            headers: {
+                'Authorization': 'Bearer ' + auth.token
+            }
+        });
+
+        dispatch({
+            type: BATTERY_MODEL_UPDATED,
+            payload: batteryModel
+        });
+
+    } catch (err) {
+        console.error(err);
+        alert('Error while updating a battery model' + err);
     }
 }
 

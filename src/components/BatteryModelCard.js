@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Card, { CardActions, CardContent } from 'material-ui/Card';
 import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
+import { connect } from "react-redux";
 
 const styles = theme => ({
   card: {
@@ -25,38 +26,59 @@ const styles = theme => ({
   },
 });
 
-function BatteryModelCard(props) {
-  const { classes } = props;
-  const { name, model, fullwarrenty, proratawarrenty, landingprice, mrp } = props;
+class BatteryModelCard extends Component {
+  render() {
+    const { classes } = this.props;
+    const { model } = this.props;
+    const batteryModel = this.props.batteryModels.find(bm => bm.model === this.props.model);
+    let content = null;
+    if (batteryModel) {
+      const { name, fullwarrenty, proratawarrenty, landingprice, mrp, stock, ah } = batteryModel;
+      content = (
+        <Typography>
+          Name: {name}
+          <br />
+          Full Warrenty: {fullwarrenty} months
+          <br />
+          Prorata Warrenty: {proratawarrenty} months
+          <br />
+          Landing Price: {landingprice} INR
+        < br />
+          MRP: {mrp} INR
+          < br />
+          Stock: {stock}
+          <br />
+          AH: {ah}
+        </Typography >
+      );
+    }
 
-  return (
-    <div>
-      <Card className={classes.card}>
-        <CardContent>
-          <Typography className={classes.title}>{name}</Typography>
-          <Typography type="headline" component="h2">
-            {model}
-          </Typography>
-          <Typography component="p">
-            Full Warrenty: {fullwarrenty}
-            <br />
-            Prorata Warrenty: {proratawarrenty}
-            <br />
-            Landing Price: {landingprice} INR
-            <br />
-            MRP: {mrp} INR
-          </Typography>
-        </CardContent>
-        <CardActions>
-          <Button dense>Learn More</Button>
-        </CardActions>
-      </Card>
-    </div>
-  );
+    return (
+      <div>
+        <Card className={classes.card}>
+          <CardContent>
+            <Typography type="headline" component="h5">
+              {model}
+            </Typography>
+            {content}
+          </CardContent>
+          <CardActions>
+            <Button dense>Learn More</Button>
+          </CardActions>
+        </Card>
+      </div>
+    );
+  }
 }
 
 BatteryModelCard.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(BatteryModelCard);
+const mapStateToProps = state => {
+  return {
+    batteryModels: state.batteryModels
+  }
+}
+
+export default withStyles(styles)(connect(mapStateToProps)(BatteryModelCard));

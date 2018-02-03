@@ -11,10 +11,32 @@ class BatteryDetail extends React.Component {
     state = {
         model: '',
         name: '',
+        brand: 'Amron',
         fullwarrenty: 0,
         proratawarrenty: 0,
         landingprice: 0.00,
-        mrp: 0.00
+        mrp: 0.00,
+        stock: 0,
+        ah: 0,
+        ref: null
+    }
+
+    constructor(props) {
+        super(props);
+        if (props.batteryModel) {
+            this.state = {
+                ref: props.batteryModel.ref,
+                model: props.batteryModel.model,
+                name: props.batteryModel.name,
+                brand: props.batteryModel.brand,
+                fullwarrenty: props.batteryModel.fullwarrenty,
+                proratawarrenty: props.batteryModel.proratawarrenty,
+                landingprice: props.batteryModel.landingprice,
+                mrp: props.batteryModel.mrp,
+                stock: props.batteryModel.stock,
+                ah: props.batteryModel.ah
+            };
+        }
     }
 
     handleAdd = () => {
@@ -37,6 +59,10 @@ class BatteryDetail extends React.Component {
 
     render() {
         const { open, onClose } = this.props;
+        let addOrSave = (<span>Save</span>);
+        if (this.props.batteryModel) {
+            addOrSave = (<span>Update</span>);
+        }
         return (
             <div>
                 <Dialog
@@ -101,14 +127,32 @@ class BatteryDetail extends React.Component {
                             value={this.state.mrp}
                             onChange={this.handleChange('mrp')}
                         />
+                        <TextField
+                            margin="dense"
+                            id="stock"
+                            label="Stock"
+                            type="number"
+                            fullWidth
+                            value={this.state.stock}
+                            onChange={this.handleChange('stock')}
+                        />
+                        <TextField
+                            margin="dense"
+                            id="ag"
+                            label="AH"
+                            type="number"
+                            fullWidth
+                            value={this.state.ah}
+                            onChange={this.handleChange('ah')}
+                        />
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={onClose} color="primary">
                             Cancel
-            </Button>
+                        </Button>
                         <Button onClick={this.handleAdd} color="primary" disabled={!this.canSave()}>
-                            Add
-            </Button>
+                            {addOrSave}
+                        </Button>
                     </DialogActions>
                 </Dialog>
             </div>

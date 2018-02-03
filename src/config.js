@@ -14,3 +14,4 @@ const firestoreDocumentsBaseUrl = `${firestoreBaseUrl}/projects/${config.FIRBASE
 const firestoreDoumentsQueryUrl = `${firestoreDocumentsBaseUrl}:runQuery`;
 
 export { config, firestoreBaseUrl, firestoreDocumentsBaseUrl, firestoreDoumentsQueryUrl };
+

@@ -18,6 +18,7 @@ import BatteryModelCard from './BatteryModelCard';
 import {
     getBatteryModels,
     createBatteryModel,
+    updateBatteryModel,
     deleteBatteryModel,
     loadAllVehicles
 } from '../store/actions';
@@ -39,6 +40,7 @@ const styles = theme => ({
 class BatteryList extends Component {
     state = {
         showAddBatteryDialog: false,
+        editBatteryModel: null,
         editVehicleDetails: null,
         showBatteryFilterDialog: false,
         filterByVehicleModel: null
@@ -57,14 +59,20 @@ class BatteryList extends Component {
 
     handleOnCloseDetail = () => {
         this.setState({
-            showAddBatteryDialog: false
+            showAddBatteryDialog: false,
+            editBatteryModel: null
         })
     }
 
     handleBatteryDetailSaved = detail => {
-        this.props.createBatteryModel(detail);
+        if (detail.ref) {
+            this.props.updateBatteryModel(detail);
+        } else {
+            this.props.createBatteryModel(detail);
+        }
         this.setState({
-            showAddBatteryDialog: false
+            showAddBatteryDialog: false,
+            editBatteryModel: null
         });
     }
 
@@ -111,17 +119,25 @@ class BatteryList extends Component {
         });
     }
 
+    handleBatteryModelEdit = batteryModel => {
+        this.setState({
+            editBatteryModel: batteryModel
+        });
+    }
+
     renderRow() {
         const { classes } = this.props;
         return this.props.batteryModels.map(model => {
             return (
                 <TableRow key={model.model}>
-                    <TableCell>{model.model}</TableCell>
+                    <TableCell><a href="#" style={{ cursor: 'pointer' }} onClick={() => this.handleBatteryModelEdit(model)}>{model.model}</a></TableCell>
                     <TableCell>{model.name}</TableCell>
                     <TableCell numeric>{model.fullwarrenty}</TableCell>
                     <TableCell numeric>{model.proratawarrenty}</TableCell>
                     <TableCell numeric>{model.landingprice}</TableCell>
                     <TableCell numeric>{model.mrp}</TableCell>
+                    <TableCell numeric>{model.stock}</TableCell>
+                    <TableCell numeric>{model.ah}</TableCell>
                     <TableCell>
                         <IconButton
                             className={classes.button}
@@ -149,7 +165,10 @@ class BatteryList extends Component {
         let vehicleDetailsDialog = null;
         let batteryFilterDialog = null;
         if (this.state.showAddBatteryDialog) {
-            addBatteryDialog = <BatteryDetail open={true} onClose={this.handleOnCloseDetail} onBatteryDetailSaved={data => this.handleBatteryDetailSaved(data)} />
+            addBatteryDialog = <BatteryDetail batteryModel={null} open={true} onClose={this.handleOnCloseDetail} onBatteryDetailSaved={data => this.handleBatteryDetailSaved(data)} />
+        }
+        if (this.state.editBatteryModel) {
+            addBatteryDialog = <BatteryDetail batteryModel={this.state.editBatteryModel} open={true} onClose={this.handleOnCloseDetail} onBatteryDetailSaved={data => this.handleBatteryDetailSaved(data)} />
         }
         if (this.state.editVehicleDetails) {
             const batteryModel = this.props.batteryModels.find(m => m.model === this.state.editVehicleDetails);
@@ -185,6 +204,8 @@ class BatteryList extends Component {
                             <TableCell numeric>Prorata Warrenty</TableCell>
                             <TableCell numeric>LandingPrice</TableCell>
                             <TableCell numeric>MRP</TableCell>
+                            <TableCell numeric>Stock</TableCell>
+                            <TableCell numeric>AH</TableCell>
                             <TableCell>Add Vehicle</TableCell>
                             <TableCell>Edit</TableCell>
                         </TableRow>
@@ -205,14 +226,9 @@ class BatteryList extends Component {
             });
             const batteryCards = batteryModels.map(b => {
                 return (
-                    <BatteryModelCard
+                    < BatteryModelCard
                         key={b.ref}
-                        name={b.batteryname}
-                        model={b.batterymodel}
-                        fullwarrenty={b.batteryfullwarrenty}
-                        proratawarrenty={b.batteryproratawarrenty}
-                        landingprice={b.batterylandingprice}
-                        mrp={b.batterymrp} />
+                        model={b.batterymodel} />
                 );
             });
             return (
@@ -249,6 +265,7 @@ const mapDispatchToProps = dispatch => {
     return {
         getBatteryModels: () => dispatch(getBatteryModels()),
         createBatteryModel: batteryModel => dispatch(createBatteryModel(batteryModel)),
+        updateBatteryModel: batteryModel => dispatch(updateBatteryModel(batteryModel)),
         deleteBatteryModel: batteryModel => dispatch(deleteBatteryModel(batteryModel)),
         loadAllVehicles: () => dispatch(loadAllVehicles())
     }
