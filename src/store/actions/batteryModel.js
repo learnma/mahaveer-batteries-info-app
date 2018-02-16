@@ -7,7 +7,11 @@ import {
     BATTERY_MODEL_UPDATED
 } from './types';
 
-import { firestoreBaseUrl, firestoreDocumentsBaseUrl } from '../../config';
+import {
+    firestoreBaseUrl,
+    firestoreDocumentsBaseUrl,
+    firestoreDoumentsQueryUrl
+} from '../../config';
 const batterymodelsUrl = `${firestoreDocumentsBaseUrl}/batterymodels`;
 
 export const getBatteryModels = () => async (dispatch, getState) => {
@@ -44,8 +48,51 @@ export const getBatteryModels = () => async (dispatch, getState) => {
 
 export const getBatteryModel = batteryModel => async (dispatch, getState) => {
     try {
-        //const batteryModels = getState().batteryModels;
-        //const batteryModel = batteryModels.find()
+        const auth = getState().auth;
+        const query = {
+            structuredQuery: {
+                where: {
+                    fieldFilter: {
+                        field: { fieldPath: 'model' },
+                        op: 'EQUAL',
+                        value: { stringValue: batteryModel }
+                    }
+                },
+                from: [
+                    { collectionId: 'batterymodels' }
+                ]
+            }
+        };
+
+        const result = await axios.post(firestoreDoumentsQueryUrl, query, {
+            headers: {
+                'Authorization': 'Bearer ' + auth.token
+            }
+        });
+        let batteryModels = [];
+        if (result.data[0].document) {
+            batteryModels = result.data.map(data => {
+                const d = data.document;
+                return {
+                    ref: data.document.name,
+                    brand: d.fields.brand ? d.fields.brand.stringValue : 'Amron',
+                    name: d.fields.name.stringValue,
+                    model: d.fields.model.stringValue,
+                    fullwarrenty: d.fields.fullwarrenty.integerValue,
+                    proratawarrenty: d.fields.proratawarrenty.integerValue,
+                    landingprice: d.fields.landingprice.doubleValue,
+                    mrp: d.fields.mrp.doubleValue,
+                    stock: d.fields.stock ? d.fields.stock.integerValue : 0,
+                    ah: d.fields.ah ? d.fields.ah.doubleValue : 0
+                }
+            });
+        }
+
+        dispatch({
+            type: BATTERY_MODELS_RETRIEVED,
+            payload: batteryModels
+        });
+
     } catch (err) {
         console.error(err);
         alert(`Error while retrieving batteryModel ${batteryModel} - ${err}`);
@@ -149,3 +196,4 @@ export const deleteBatteryModel = batteryModel => async (dispatch, getState) => 
         alert('Error while deleting battery model' + err);
     }
 }
+

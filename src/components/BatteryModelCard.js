@@ -6,6 +6,8 @@ import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import { connect } from "react-redux";
 
+import { getBatteryModel } from '../store/actions';
+
 const styles = theme => ({
   card: {
     minWidth: 275,
@@ -27,6 +29,10 @@ const styles = theme => ({
 });
 
 class BatteryModelCard extends Component {
+  componentDidMount() {
+    this.props.getBatteryModel(this.props.model);
+  }
+
   render() {
     const { classes } = this.props;
     const { model } = this.props;
@@ -81,4 +87,10 @@ const mapStateToProps = state => {
   }
 }
 
-export default withStyles(styles)(connect(mapStateToProps)(BatteryModelCard));
+const mapDispatchToProps = dispatch => {
+  return {
+    getBatteryModel: batteryModel => dispatch(getBatteryModel(batteryModel))
+  }
+}
+
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(BatteryModelCard));

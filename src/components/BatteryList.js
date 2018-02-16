@@ -8,6 +8,7 @@ import DeleteIcon from 'material-ui-icons/Delete';
 import IconButton from 'material-ui/IconButton';
 import MotorcycleIcon from 'material-ui-icons/Motorcycle';
 import Typography from 'material-ui/Typography';
+import TextField from 'material-ui/TextField';
 import { connect } from "react-redux";
 
 import BatteryDetail from './BatteryDetail';
@@ -20,7 +21,8 @@ import {
     createBatteryModel,
     updateBatteryModel,
     deleteBatteryModel,
-    loadAllVehicles
+    loadAllVehicles,
+    getBatteryModel
 } from '../store/actions';
 
 const styles = theme => ({
@@ -43,7 +45,9 @@ class BatteryList extends Component {
         editBatteryModel: null,
         editVehicleDetails: null,
         showBatteryFilterDialog: false,
-        filterByVehicleModel: null
+        filterByVehicleModel: null,
+        batteryModelToSearch: '',
+        batteryModelFilterOn: false
     }
 
     componentDidMount() {
@@ -125,11 +129,37 @@ class BatteryList extends Component {
         });
     }
 
+    handleBatterryModelChange = () => event => {
+        this.setState({
+            batteryModelToSearch: event.target.value
+        });
+    };
+
+    handleSearchBatteryModel = () => {
+        const { batteryModelToSearch, batteryModelFilterOn } = this.state;
+        if (batteryModelFilterOn) {
+            this.setState({
+                batteryModelToSearch: ''
+            });
+        }
+        if (batteryModelToSearch) {
+            this.props.getBatteryModel(batteryModelToSearch);
+        }
+
+        this.setState({
+            batteryModelFilterOn: !batteryModelFilterOn
+        });
+    }
+
     renderRow() {
         const { classes } = this.props;
-        return this.props.batteryModels.map(model => {
+        let batteryModels = this.props.batteryModels;
+        if (this.state.batteryModelFilterOn) {
+            batteryModels = this.props.batteryModels.filter(bm => bm.model === this.state.batteryModelToSearch);
+        }
+        return batteryModels.map(model => {
             return (
-                <TableRow key={model.model}>
+                <TableRow key={model.ref}>
                     <TableCell><a href="#" style={{ cursor: 'pointer' }} onClick={() => this.handleBatteryModelEdit(model)}>{model.model}</a></TableCell>
                     <TableCell>{model.name}</TableCell>
                     <TableCell numeric>{model.fullwarrenty}</TableCell>
@@ -190,7 +220,20 @@ class BatteryList extends Component {
                     Add Battery Model
                 </Button>
                 <Button raised color="primary" className={classes.button} onClick={this.handleBatteryFilterDialogOpen}>
-                    Search Battery Model
+                    Select Vehicle
+                </Button>
+                <TextField
+                    id="searchbatterymodel"
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    onChange={this.handleBatterryModelChange()}
+                    value={this.state.batteryModelToSearch}
+                    placeholder="Enter battery model"
+                    margin="normal"
+                />
+                <Button raised color="primary" className={classes.button} onClick={this.handleSearchBatteryModel}>
+                    {this.state.batteryModelFilterOn ? 'Show all batteries' : 'Search battery model'}
                 </Button>
                 {addBatteryDialog}
                 {vehicleDetailsDialog}
@@ -264,6 +307,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         getBatteryModels: () => dispatch(getBatteryModels()),
+        getBatteryModel: batteryModel => dispatch(getBatteryModel(batteryModel)),
         createBatteryModel: batteryModel => dispatch(createBatteryModel(batteryModel)),
         updateBatteryModel: batteryModel => dispatch(updateBatteryModel(batteryModel)),
         deleteBatteryModel: batteryModel => dispatch(deleteBatteryModel(batteryModel)),

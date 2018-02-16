@@ -10,7 +10,8 @@ const initialState = [];
 const reducer = (state = initialState, action) => {
     switch (action.type) {
         case BATTERY_MODELS_RETRIEVED:
-            return action.payload;
+            let removeToBeAddedModels = state.filter(m => action.payload.find(nm => nm.model !== m.model));
+            return [...removeToBeAddedModels, ...action.payload];
 
         case BATTERY_MODEL_CREATED:
             return [...state, action.payload]

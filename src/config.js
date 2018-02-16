@@ -8,10 +8,14 @@ const configProd = {
     FIRBASE_PROJECT: 'mahaveerbattries'
 }
 
-const config = process.env.NODE_ENV === 'production' ? configProd : configDev;
+// -- debug production --
+const config = process.env.NODE_ENV === 'production' ? configProd : configProd;
+//const config = process.env.NODE_ENV === 'production' ? configProd : configDev;
 const firestoreBaseUrl = 'https://firestore.googleapis.com/v1beta1';
 const firestoreDocumentsBaseUrl = `${firestoreBaseUrl}/projects/${config.FIRBASE_PROJECT}/databases/(default)/documents`;
 const firestoreDoumentsQueryUrl = `${firestoreDocumentsBaseUrl}:runQuery`;
 
 export { config, firestoreBaseUrl, firestoreDocumentsBaseUrl, firestoreDoumentsQueryUrl };
+
+//BL700LMF
 
